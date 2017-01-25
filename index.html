@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!-- Created by Matthieu Lepers -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+	<head>
+		<title>LSystem Sandbox</title>
+		<meta charset="UTF-8" />
+		<link rel="stylesheet" href="styles/style.css">
+		<script type="text/javascript" src="scripts/main.js"></script>
+	</head>
+	<body>
+		<canvas id="canvas"></canvas>
+		<div id="custom">
+			<h2>LSystem Sandbox</h2>
+			<fieldset>
+				<legend>Custom LSystem</legend>
+				<h4>Axiome: </h4>
+				<input type="text" value="F" id="axiome" />
+				<br/>
+				<h4>Rules (1 per line): </h4>
+				<textarea id="rules" pattern="(.+ -> [A-Z-+]+[\s]*)*">F -> F-F++F-F</textarea>
+			</fieldset>
+			<fieldset>
+				<legend>Turtle configuration</legend>
+				Position: {x: <input type="number" value="100" id="x" class="number" />, y: <input type="number" value="100" id="y" class="number" />}<br />
+				<span>Cap: </span><input type="number" value="0" id="cap" /><br />
+				<span>Step length: </span><input type="number" value="5" id="stepLength" /><br />
+				<span>Scale :</span><input type="text" value="1/3" id="scale" /><br />
+				<span>Angle :</span><input type="text" value="Math.PI/3" id="angle" /><br />
+				<span>Symboles :</span><input type="text" value="F+-" id="symboles" /><br /><br />
+				<button id="drawButton">Draw 6 steps</button>
+			</fieldset>
+			<br/>
+			<h2>Popular LSystems</h2>
+			<select id="selector">
+				<option value="vonKoch1">Von Koch 1</option>
+				<option value="vonKoch2">Von Koch 2</option>
+				<option value="hilbert">Hilbert</option>
+				<option value="dragon" selected="selected">Dragon</option>
+			</select>
+		</div>
+		<footer>
+			<a href="https://github.com/AireAyquaza/LSystemSandbox" class="sources">Github sources</a>
+			<span>By Matthieu Lepers</span>
+		</footer>
+	</body>
+</html>

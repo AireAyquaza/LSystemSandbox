@@ -1,0 +1,113 @@
+/* Created by Matthieu Lepers */
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+html, body, div#custom, fieldset, footer {
+	display: block;
+}
+
+div#custom {
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 299px;
+	border-left: 1px solid black;
+	height: 100%;
+}
+
+div#custom>h2 {
+	margin: 5px;
+	border-bottom: 1px solid orange;
+}
+
+fieldset {
+	margin: 5px;
+	border: 1px solid #AAA;
+	border-radius: 4px 4px 0px 0px;
+	background-color: #eee;
+	padding: 1.5em;
+	padding-bottom: 10px;
+	margin-top: 1em;
+	box-shadow: 1px 1px 2px #fff inset;
+	position: relative;
+}
+
+fieldset legend {
+	font-weight: bold;
+	color: #444;
+	padding: 5px 10px;
+	border-radius: 2px;
+	border: 1px solid #AAA;
+	background-color: #FFF;
+	box-shadow: 3px 3px 15px #BBB;
+	max-width: 100%;
+}
+
+input[type="text"] {
+	width: 100%;
+}
+
+input[type="number"] {
+	display: inline-block;
+	width: 50px;
+	text-align: right;
+}
+
+fieldset span {
+	display: inline-block;
+	min-width: 80px;
+}
+
+textarea {
+	resize: none;
+	display: block;
+	width: 100%
+}
+
+h4 {
+	margin: 5px;
+	margin-left: 0;
+}
+
+button {
+	display: block;
+	width: 150px;
+	float: right;
+	cursor: pointer;
+	margin: 6px 14px;
+    border: 1px solid #AAA;
+    padding: 3px 7px;
+    color: #111;
+    text-decoration: none;
+    background: #FFF;
+    border-radius: 12px;
+    text-shadow: 0 1px 0 #FFF;
+    background: linear-gradient(top, #f8f8f8, #d8d8d8);
+	font-weight: bold;
+}
+
+select {
+	display: block;
+	width: 150px;
+	margin: auto;
+}
+
+footer {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 300px;
+}
+
+footer span, footer a {
+	display: inlmine-block;
+	padding: 5px;
+}
+
+footer span {
+	float: right;
+}
