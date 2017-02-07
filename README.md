@@ -1,4 +1,3 @@
 # LSystemSandbox
 
-### Will be implemented
-- Flying Turtle
+Make LSystems by your own
