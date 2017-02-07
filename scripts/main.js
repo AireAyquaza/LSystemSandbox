@@ -86,8 +86,7 @@ function filtreSymbolesTortue(conf, word)
 	
 	return res;
 }
-var a = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-var aIndex = 0;
+
 // Question 8
 function interpreteSymbole(conf, etatDessin, sym)
 {
@@ -95,7 +94,6 @@ function interpreteSymbole(conf, etatDessin, sym)
 	{
 		case 'F': //[paths.head().concat([A]), paths.tail()]
 			var nouvelEtatTortue = avance(conf, etatDessin.etatTortues.head());
-			nouvelEtatTortue.position.letter = a[aIndex++];
 			return {
 				etatTortues: etatDessin.etatTortues.setHead(nouvelEtatTortue),
 				paths: [etatDessin.paths.head().concat([nouvelEtatTortue.position])].concat(etatDessin.paths.tail())
@@ -172,6 +170,8 @@ function animLSysteme(conf, lsys)
 	if (index < lsys.length)
 	{
 		dessine(interpreteMot(conf, lsys[index]));
+		ctx.font = '32px serif';
+		ctx.fillText((index + 1) + '/' + selected.n, canvas.width - 80, canvas.height - 5);
 		conf = {etatInitial: conf.etatInitial, longueurPas: conf.longueurPas * conf.factEch, factEch: conf.factEch, angle: conf.angle, symboles: conf.symboles};
 		index++;
 	}
@@ -329,11 +329,11 @@ function init()
 	}
 	else if (document.URL.indexOf('custom') != -1)
 	{
-		custom_lsystem = parseCustom();
+		selected = parseCustom();
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
-		config = custom_lsystem.config;
-		lsys = lsysteme(custom_lsystem.axiome, custom_lsystem.rules, custom_lsystem.n);
+		config = selected.config;
+		lsys = lsysteme(selected.axiome, selected.rules, selected.n);
 		if (timer != null)
 			window.clearInterval(timer);
 		timer = window.setInterval(animLSysteme, 500, config, lsys);
