@@ -53,8 +53,15 @@ input[type="text"] {
 
 input[type="number"] {
 	display: inline-block;
-	width: 50px;
+	width: 45px;
 	text-align: right;
+	padding: 1px 0px;
+	margin: 0;
+}
+
+input#stepLength {
+	display: inline;
+	width: 100%;
 }
 
 fieldset span {

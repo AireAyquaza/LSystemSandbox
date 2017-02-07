@@ -1,21 +1,21 @@
 //Created by Matthieu Lepers
-//{"axiome":"F","rules":["\"F\": \"F+F-F++F-F+F\""],"config":{"etatInitial":{"position":{"x":300,"y":300},"cap":0},"longueurPas":5,"factEch":0.3333333333333333,"angle":1.0471975511965976,"symboles":"F+-"},"n":6}
-String.prototype.asList = function() {return this.split('');}
-
-String.prototype.head = function() {return this.charAt(0);}
-String.prototype.tail = function() {return this.substring(1);}
+// Turtle:    {"axiome":"F","rules":["\"F\": \"F+F-F++F-F+F\""],"config":{"etatInitial":{"position":{"x":300,"y":300},"cap":0},"longueurPas":5,"factEch":0.3333333333333333,"angle":1.0471975511965976,"symboles":"F+-"},"n":6}
+// Hexagones: {"axiome":"F+F","rules":["\"F\": \"F-F+F-F+F-F\""],"config":{"etatInitial":{"position":{"x":800,"y":100},"cap":0},"longueurPas":5,"factEch":0.3333333333333333,"angle":0.5235987755982988,"symboles":"F+-"},"n":6}
+// Flower:    {"axiome":"F+F","rules":["\"F\": \"F-F+F-F\""],"config":{"etatInitial":{"position":{"x":800,"y":100},"cap":0},"longueurPas":5,"factEch":0.3333333333333333,"angle":0.5235987755982988,"symboles":"F+-"},"n":6}
+Array.prototype.head = function() {return this[0];};
+Array.prototype.tail = function() {var res = new Array();for (var i = 1; i < this.length; i++)res.push(this[i]);return res;};
+Array.prototype.last = function() {return this[this.length - 1];};
+Array.prototype.init = function() {var res = new Array();for (var i = 0; i < this.length - 1; i++)res.push(this[i]);return res;};
+Array.prototype.setHead = function(element) {return [element].concat(this);};
+Array.prototype.setLast = function(element) {this.push(element); return this;};
 
 // Question 1
 function motSuivant(rules, word)
 {
 	var res = '';
-	var i = 0;
 	
-	while (word.charAt(i) != '')
-	{
+	for (var i = 0; i < word.length; i++)
 		res += rules(word.toUpperCase().charAt(i));
-		i++;
-	}
 	
 	return res;
 }
@@ -32,6 +32,7 @@ function flocon(sym)
 // Question 3
 function lsysteme(axiome, rules, n)
 {
+	var t = new Date().getTime();
 	var res = [];
 	var ax = axiome;
 	
@@ -41,6 +42,7 @@ function lsysteme(axiome, rules, n)
 		ax = motSuivant(rules, ax.toUpperCase());
 	}
 	
+	console.log('Time: ' + (((new Date().getTime() - t) / 1000).toFixed(2)) + 's');
 	return res;
 }
 
@@ -84,28 +86,44 @@ function filtreSymbolesTortue(conf, word)
 	
 	return res;
 }
-
+var a = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+var aIndex = 0;
 // Question 8
 function interpreteSymbole(conf, etatDessin, sym)
 {
-	if (sym == 'F')
+	switch (sym)
 	{
-		var nouvelEtat = avance(conf, etatDessin.etatTortue);
-		return {
-			etatTortue: nouvelEtat,
-			path: [nouvelEtat.position].concat(etatDessin.path)
-		};
+		case 'F': //[paths.head().concat([A]), paths.tail()]
+			var nouvelEtatTortue = avance(conf, etatDessin.etatTortues.head());
+			nouvelEtatTortue.position.letter = a[aIndex++];
+			return {
+				etatTortues: etatDessin.etatTortues.setHead(nouvelEtatTortue),
+				paths: [etatDessin.paths.head().concat([nouvelEtatTortue.position])].concat(etatDessin.paths.tail())
+			};
+		case '+':
+			return {
+				etatTortues: etatDessin.etatTortues.setHead(tourneAGauche(conf, etatDessin.etatTortues.head())),
+				paths: etatDessin.paths
+			};
+		case '-':
+			return {
+				etatTortues: etatDessin.etatTortues.setHead(tourneADroite(conf, etatDessin.etatTortues.head())),
+				paths: etatDessin.paths
+			};
+		case '[': //paths.concat(paths.head().tail())
+			var newn = (etatDessin.paths.head().length == 1 ? etatDessin.paths.head() : etatDessin.paths.head().tail());
+			return {
+				etatTortues:  etatDessin.etatTortues.setLast(etatDessin.etatTortues.head()),
+				paths: etatDessin.paths.concat([newn])
+			};
+		case ']': //paths = [paths.last(), paths.init()]
+			return {
+				etatTortues: [etatDessin.etatTortues.last()].concat(etatDessin.etatTortues.init()),
+				paths: [etatDessin.paths.last()].concat(etatDessin.paths.init())
+			};
+		default:
+			console.warn('Symbole "' + sym + '" is not a recognized symbole!');
 	}
-	else if (sym == '+')
-		return {
-			etatTortue: tourneAGauche(conf, etatDessin.etatTortue),
-			path: etatDessin.path
-		};
-	else if (sym == '-')
-		return {
-			etatTortue: tourneADroite(conf, etatDessin.etatTortue),
-			path: etatDessin.path
-		};
 }
 
 // Question 9
@@ -113,16 +131,17 @@ function interpreteMot(conf, word)
 {
 	var res = [];
 	var syms = filtreSymbolesTortue(conf, word);
-	var etatDessin = {etatTortue: conf.etatInitial, path: []};
+	var etatDessin = {etatTortues: [conf.etatInitial], paths: [[conf.etatInitial.position]]};
 	
-	for (var i = 0 ; i < syms.length; i++)
+	for (var i = 0; i < syms.length; i++)
 	{
 		var nouvelEtatDessin = interpreteSymbole(conf, etatDessin, syms.charAt(i));
-		res = nouvelEtatDessin.path;
-		
+		//console.log('--------------------------------------------------------------');
+		//console.log(syms.charAt(i) + ' = ' + JSON.stringify(nouvelEtatDessin.paths.tail()));
+		res = nouvelEtatDessin.paths;
 		etatDessin = nouvelEtatDessin;
 	}
-	res.push(conf.etatInitial.position);
+	
 	return res;
 }
 
@@ -137,11 +156,15 @@ function drawLine(a, b)
 	ctx.closePath();
 }
 
-function dessine(path)
+function dessine(paths)
 {
+	var t = new Date().getTime();
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	for (var i = 0; i < path.length - 1; i++)
-		drawLine(path[i], path[i + 1]);
+	for (var i = 0; i < paths.length; i++)
+		if (paths[i].length > 1)
+			for (var j = 0; j < paths[i].length - 1; j++)
+				drawLine(paths[i][j], paths[i][j + 1]);
+	console.log('Draw time: ' + (((new Date().getTime() - t) / 1000).toFixed(2)) + 's');
 }
 
 function animLSysteme(conf, lsys)
@@ -188,7 +211,7 @@ function fromURL()
 function makeLSystem()
 {
 	var _axiome = document.getElementById('axiome').value;
-	var _rules = document.getElementById('rules').value.split('\n').map(function(x) {return x.replace(/([A-Z-+]+) -> ([A-Z-+]+)/, '"$1": "$2"');});
+	var _rules = document.getElementById('rules').value.split('\n').map(function(x) {return x.split(' -> ').map(function(x) {return '"' + x + '"'}).join(': ');});
 	
 	var _x = eval(document.getElementById('x').value);
 	var _y = eval(document.getElementById('y').value);
@@ -208,10 +231,11 @@ function makeLSystem()
 
 function parseCustom()
 {
-	var object = JSON.parse(decodeURI(document.URL.replace(/.+custom=(.+)/, '$1')).replace(/\//g,''));
+	var object = JSON.parse(decodeURI(document.URL.split('custom=')[1]));
 	
 	document.getElementById('axiome').value = object.axiome;
-	document.getElementById('rules').value = object.rules.map(function(x) {return x.replace(new RegExp('"([A-Z-+]+)": "([A-Z-+]+)"'), '$1 -> $2');}).join('\n');
+	document.getElementById('rules').value = object.rules.map(function(x) {return x.split(': ').join(' -> ').replace(new RegExp(/"/g), '');}).join('\n');
+	document.getElementById('rules').value = object.rules.map(function(x) {return x.split(': ').join(' -> ').replace(new RegExp(/"/g), '');}).join('\n');
 	document.getElementById('x').value = object.config.etatInitial.position.x;
 	document.getElementById('y').value = object.config.etatInitial.position.y;
 	document.getElementById('cap').value = object.config.etatInitial.cap;
@@ -220,7 +244,7 @@ function parseCustom()
 	document.getElementById('angle').value = object.config.angle;
 	document.getElementById('symboles').value = object.config.symboles;
 	
-	var rules = object.rules.map(function(x) {return '{' + x + '}';}).join(',');
+	var rules = '{' + object.rules.join(',') + '}';
 	object.rules = parseRules(rules);
 	return object;
 }
@@ -269,11 +293,32 @@ function init()
 		config: {etatInitial: {position: {x: canvas.width / 2, y: canvas.height / 2 - 200}, cap: 0}, longueurPas: 5, factEch: 1/2, angle: Math.PI / 2, symboles: 'F+-'},
 		n: 14
 	};
+	var twig = {
+		axiome: 'F',
+		rules: parseRules('{"F": "F[-F]F[+F]F"}'),
+		config: {etatInitial: {position: {x: canvas.width / 2, y: canvas.height}, cap: -Math.PI/2}, longueurPas: 8, factEch: 1/3, angle: 25 * Math.PI / 180, symboles: 'F+-[]'},
+		n: 5
+	};
+	var brush = {
+		axiome: 'F',
+		rules: parseRules('{"F": "FF-[-F+F+F]+[+F-F-F]"}'),
+		config: {etatInitial: {position: {x: canvas.width / 2, y: canvas.height}, cap: -Math.PI/2}, longueurPas: 8, factEch: 2/5, angle: 25 * Math.PI / 180, symboles: 'F+-[]'},
+		n: 5
+	};
+	var fractalTree = {
+		axiome: 'F',
+		rules: parseRules('{"F": "F[+F][-F]"}'),
+		config: {etatInitial: {position: {x: canvas.width / 2, y: canvas.height * 2 / 3}, cap: -Math.PI/2}, longueurPas: 40, factEch: 1/3, angle: Math.PI/6, symboles: 'F+-[]'},
+		n: 9
+	};
 	
 	registeredLSystems.set('vonKoch1', vonKoch1);
 	registeredLSystems.set('vonKoch2', vonKoch2);
 	registeredLSystems.set('hilbert', hilbert);
 	registeredLSystems.set('dragon', dragon);
+	registeredLSystems.set('twig', twig);
+	registeredLSystems.set('brush', brush);
+	registeredLSystems.set('fractalTree', fractalTree);
 	
 	if (document.URL.indexOf('lsystem=') != -1 && document.URL.indexOf('custom') == -1)
 	{
@@ -284,7 +329,7 @@ function init()
 	}
 	else if (document.URL.indexOf('custom') != -1)
 	{
-		var custom_lsystem = parseCustom();
+		custom_lsystem = parseCustom();
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
 		config = custom_lsystem.config;
@@ -294,8 +339,7 @@ function init()
 		timer = window.setInterval(animLSysteme, 500, config, lsys);
 	}
 	
-	document.getElementById('selector').addEventListener('change', function()
-	{
+	document.getElementById('selector').addEventListener('change', function() {
 		document.location.replace(encodeURI('index.html?lsystem=' + this.value));
 	});
 	document.getElementById('drawButton').addEventListener('click', function() {
